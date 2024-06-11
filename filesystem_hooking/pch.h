@@ -9,5 +9,11 @@
 
 // Добавьте сюда заголовочные файлы для предварительной компиляции
 #include "framework.h"
-
+#include <easyhook.h>
+#include <string>
+#include <iostream>
+#include <Windows.h>
+#include <WinNT.h>
+#include <tchar.h>
+using namespace std;
 #endif //PCH_H
