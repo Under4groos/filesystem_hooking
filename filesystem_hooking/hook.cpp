@@ -5,13 +5,23 @@ using namespace std;
 #include <easyhook.h>
 #include <iostream>
 #include "Converter.h"
+#include <fstream>
+#include<iostream>
 extern "C" void __declspec(dllexport) __stdcall NativeInjectionEntryPoint(REMOTE_ENTRY_INFO * inRemoteInfo);
 
 
+ 
+BOOL DirectoryExists(LPCTSTR szPath)
+{
+	DWORD dwAttrib = GetFileAttributesW(szPath);
 
-
+	return (dwAttrib != INVALID_FILE_ATTRIBUTES &&
+		(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+}
 
 DWORD gFreqOffset = 0;
+string path{};
+ifstream ifile; struct stat info;
 NTSTATUS NtCreateFileHook(
 	PHANDLE FileHandle,
 	ACCESS_MASK DesiredAccess,
@@ -27,11 +37,10 @@ NTSTATUS NtCreateFileHook(
 ) {
 
 
-	LPCWSTR buff_ = (LPCWSTR)(ObjectAttributes->ObjectName->Buffer);
-	cout << (int)GetActiveWindow() << ":" << endl;
-	cout << ConvertLPCWSTRToString(buff_) << endl;
+	 
+	path = ConvertLPCWSTRToString((LPCWSTR)(ObjectAttributes->ObjectName->Buffer));
 
-
+	cout << path << endl;
 
 	//MessageBox(GetActiveWindow(), (LPCWSTR)ObjectAttributes->ObjectName->Buffer,(LPCWSTR)L"Object Name", MB_OK);
 	return NtCreateFile(FileHandle, DesiredAccess, ObjectAttributes, IoStatusBlock, AllocationSize, FileAttributes, ShareAccess,

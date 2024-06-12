@@ -2,8 +2,7 @@
  
 #include <iostream>
  
- 
- 
+
 #include <easyhook.h>
  
 #include <winnt.h>
