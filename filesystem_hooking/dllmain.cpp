@@ -5,6 +5,12 @@
 #include <Windows.h>
 #include <iostream>
 using namespace std;
+void loaded(HMODULE hModule) {
+    cout << GetModuleHandleW(NULL) << endl;
+
+    
+    
+}
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
                        LPVOID lpReserved
@@ -13,27 +19,16 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
+
+
+       
         CreateConsole();
-
-        cout << GetModuleHandleW(NULL) << endl;
-
-        /*NTSTATUS nt = RhInjectLibrary(
-            processId,
-            0,
-            EASYHOOK_INJECT_DEFAULT,
-            NULL,
-            dllToInject,
-            NULL,
-            0
-        );*/
-
-
-
-    case DLL_THREAD_ATTACH:
-    case DLL_THREAD_DETACH:
-        break;
-    case DLL_PROCESS_DETACH:
+        loaded(hModule);
         CloseConsole();
+    case DLL_THREAD_ATTACH:
+    case DLL_THREAD_DETACH:   
+    case DLL_PROCESS_DETACH:
+        
         break;
     }
     return TRUE;
