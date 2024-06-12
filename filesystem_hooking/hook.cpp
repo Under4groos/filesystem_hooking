@@ -9,16 +9,28 @@ using namespace std;
 #include<iostream>
 extern "C" void __declspec(dllexport) __stdcall NativeInjectionEntryPoint(REMOTE_ENTRY_INFO * inRemoteInfo);
 
-
- 
-BOOL DirectoryExists(LPCTSTR szPath)
-{
-	DWORD dwAttrib = GetFileAttributesW(szPath);
-
-	return (dwAttrib != INVALID_FILE_ATTRIBUTES &&
-		(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+string GetStatus(long atr) {
+	switch (atr)
+	{
+	case DELETE:
+		return "Delete";
+	case FILE_WRITE_DATA:
+	case FILE_WRITE_ATTRIBUTES:
+	case FILE_WRITE_EA:
+	case FILE_APPEND_DATA:
+	case WRITE_DAC:
+	case WRITE_OWNER:
+		return "Write";
+	case FILE_READ_DATA:
+	case FILE_READ_ATTRIBUTES:
+	case FILE_READ_EA:
+	case READ_CONTROL:
+		return "Read";
+	}
+	return "null";
 }
-
+ 
+ 
 DWORD gFreqOffset = 0;
 string path{};
 ifstream ifile; struct stat info;
@@ -35,13 +47,20 @@ NTSTATUS NtCreateFileHook(
 	PVOID EaBuffer,
 	ULONG EaLength
 ) {
+	// \??\
 
+	try
+	{
+		path = ConvertLPCWSTRToString((LPCWSTR)(ObjectAttributes->ObjectName->Buffer));
 
+		cout << GetStatus(DesiredAccess) << ": " << path << endl;
+	}
+	catch (const std::exception& e)
+	{
+		cout << e.what() << endl;
+	}
 	 
-	path = ConvertLPCWSTRToString((LPCWSTR)(ObjectAttributes->ObjectName->Buffer));
-
-	cout << path << endl;
-
+	
 	//MessageBox(GetActiveWindow(), (LPCWSTR)ObjectAttributes->ObjectName->Buffer,(LPCWSTR)L"Object Name", MB_OK);
 	return NtCreateFile(FileHandle, DesiredAccess, ObjectAttributes, IoStatusBlock, AllocationSize, FileAttributes, ShareAccess,
 		CreateDisposition, CreateOptions, EaBuffer, EaLength);
